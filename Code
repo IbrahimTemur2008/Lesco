@@ -1,0 +1,522 @@
+using System;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
+
+namespace LESCOApp
+{
+    public class Person
+    {
+        private string phoneNumber;
+        public string PhoneNumber
+        {
+            get { return phoneNumber; }
+            set { phoneNumber = FormatPhoneNumber(value); }
+        }
+
+        public string FirstName { get; set; }
+        public string MiddleName { get; set; }
+        public string LastName { get; set; }
+
+        private string cnic;
+        public string CNIC
+        {
+            get { return cnic; }
+            set { cnic = FormatCNIC(value); }
+        }
+
+        private string password;
+        public string Password
+        {
+            get { return password; }
+            set { password = value; }
+        }
+
+        private string FormatPhoneNumber(string phoneNumber)
+        {
+            phoneNumber = Regex.Replace(phoneNumber, @"[^\d]", ""); // Remove non-digit characters
+            return $"+92-3{phoneNumber.Substring(3, 2)}-{phoneNumber.Substring(5)}";
+        }
+
+        private string FormatCNIC(string cnic)
+        {
+            cnic = Regex.Replace(cnic, @"[^\d]", ""); // Remove non-digit characters
+            return $"{cnic.Substring(0, 5)}-{cnic.Substring(5, 7)}-{cnic.Substring(12)}";
+        }
+    }
+
+    public class MeterReading
+    {
+        public int UnitsConsumed { get; set; }
+        public int PersonId { get; set; }
+    }
+
+    public class HomeAppliance
+    {
+        public string Name { get; set; }
+        public double PowerConsumption { get; set; }
+        public int UnitsConsumedPerTime { get; set; }
+        public string Category { get; set; }
+    }
+
+    public class Database
+    {
+        private List<Person> people;
+        private List<MeterReading> meterReadings;
+        private List<HomeAppliance> homeAppliances;
+
+        public Database()
+        {
+            people = new List<Person>();
+            meterReadings = new List<MeterReading>();
+            homeAppliances = new List<HomeAppliance>();
+        }
+
+        public void AddPerson(Person person)
+        {
+            people.Add(person);
+        }
+
+        public void AddMeterReading(MeterReading meterReading)
+        {
+            meterReadings.Add(meterReading);
+        }
+
+        public void AddHomeAppliance(HomeAppliance homeAppliance)
+        {
+            homeAppliances.Add(homeAppliance);
+        }
+
+        public List<Person> GetPeople()
+        {
+            return people;
+        }
+
+        public List<HomeAppliance> GetHomeAppliances()
+        {
+            return homeAppliances;
+        }
+
+        public void ShowPeople()
+        {
+            foreach (var person in people)
+            {
+                Console.WriteLine($"Phone Number: {person.PhoneNumber}");
+                Console.WriteLine($"Name: {person.FirstName} {person.MiddleName} {person.LastName}");
+                Console.WriteLine($"CNIC: {person.CNIC}");
+                Console.WriteLine();
+            }
+        }
+
+        public void ShowMeterReadings()
+        {
+            foreach (var meterReading in meterReadings)
+            {
+                Console.WriteLine($"Person ID: {meterReading.PersonId}");
+                Console.WriteLine($"Units Consumed: {meterReading.UnitsConsumed}");
+                Console.WriteLine();
+            }
+        }
+
+        public void ShowHomeAppliances()
+        {
+            foreach (var homeAppliance in homeAppliances)
+            {
+                Console.WriteLine($"Name: {homeAppliance.Name}");
+                Console.WriteLine($"Power Consumption: {homeAppliance.PowerConsumption} Watts");
+                Console.WriteLine($"Units Consumed per Time: {homeAppliance.UnitsConsumedPerTime}");
+                Console.WriteLine();
+            }
+        }
+
+        public void CalculateCost()
+        {
+            foreach (var meterReading in meterReadings)
+            {
+                double cost = 0;
+                if (meterReading.UnitsConsumed <= 100)
+                {
+                    cost = meterReading.UnitsConsumed * 12.21;
+                }
+                else if (meterReading.UnitsConsumed <= 200)
+                {
+                    cost = 100 * 12.21 + (meterReading.UnitsConsumed - 100) * 14.53;
+                }
+                else if (meterReading.UnitsConsumed <= 300)
+                {
+                    cost = 100 * 12.21 + 100 * 14.53 + (meterReading.UnitsConsumed - 200) * 31.51;
+                }
+                else if (meterReading.UnitsConsumed <= 400)
+                {
+                    cost = 100 * 12.21 + 100 * 14.53 + 100 * 31.51 + (meterReading.UnitsConsumed - 300) * 38.41;
+                }
+                else if (meterReading.UnitsConsumed <= 500)
+                {
+                    cost = 100 * 12.21 + 100 * 14.53 + 100 * 31.51 + 100 * 38.41 + (meterReading.UnitsConsumed - 400) * 41.62;
+                }
+                else if (meterReading.UnitsConsumed <= 600)
+                {
+                    cost = 100 * 12.21 + 100 * 14.53 + 100 * 31.51 + 100 * 38.41 + 100 * 41.62 + (meterReading.UnitsConsumed - 500) * 43.04;
+                }
+                else if (meterReading.UnitsConsumed <= 700)
+                {
+                    cost = 100 * 12.21 + 100 * 14.53 + 100 * 31.51 + 100 * 38.41 + 100 * 41.62 + 100 * 43.04 + (meterReading.UnitsConsumed - 600) * 44.18;
+                }
+                else
+                {
+                    cost = 100 * 12.21 + 100 * 14.53 + 100 * 31.51 + 100 * 38.41 + 100 * 41.62 + 100 * 43.04 + 100 * 44.18 + (meterReading.UnitsConsumed - 700) * 49.10;
+                }
+
+                Console.WriteLine($"Person ID: {meterReading.PersonId}");
+                Console.WriteLine($"Units Consumed: {meterReading.UnitsConsumed}");
+                Console.WriteLine($"Total cost: Rs. {cost}");
+                Console.WriteLine();
+            }
+        }
+    }
+
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            // Create Database
+            Database database = new Database();
+
+            // Account Creation
+            Person person = new Person();
+            Console.WriteLine("Enter your phone number (Format: +92-3YY-YYYYYYY, numbers only):");
+            while (true)
+            {
+                string phoneNumber = Console.ReadLine();
+                if (IsValidPhoneNumber(phoneNumber))
+                {
+                    person.PhoneNumber = phoneNumber;
+                    break;
+                }
+                else
+                {
+                    Console.WriteLine("Invalid phone number format. Please try again:");
+                }
+            }
+
+            Console.WriteLine("Enter your first name (letters only):");
+            while (true)
+            {
+                string firstName = Console.ReadLine();
+                if (IsValidName(firstName))
+                {
+                    person.FirstName = firstName;
+                    break;
+                }
+                else
+                {
+                    Console.WriteLine("Invalid first name format. Please try again:");
+                }
+            }
+
+            Console.WriteLine("Enter your middle name (letters only, press Enter to skip):");
+            string middleName = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(middleName))
+            {
+                person.MiddleName = middleName;
+            }
+
+            Console.WriteLine("Enter your last name (letters only):");
+            while (true)
+            {
+                string lastName = Console.ReadLine();
+                if (IsValidName(lastName))
+                {
+                    person.LastName = lastName;
+                    break;
+                }
+                else
+                {
+                    Console.WriteLine("Invalid last name format. Please try again:");
+                }
+            }
+
+            Console.WriteLine("Enter your CNIC (Format: XXXXX-XXXXXXX-X, numbers only):");
+            while (true)
+            {
+                string cnic = Console.ReadLine();
+                if (IsValidCNIC(cnic))
+                {
+                    person.CNIC = cnic;
+                    break;
+                }
+                else
+                {
+                    Console.WriteLine("Invalid CNIC format. Please try again:");
+                }
+            }
+
+            Console.WriteLine("Enter your password:");
+            string password = Console.ReadLine();
+            person.Password = password;
+
+            // Sign Up
+            Console.WriteLine("Sign Up Successful!");
+
+            // Add person to the database
+            database.AddPerson(person);
+
+            // Show all people in the database
+            Console.WriteLine("People in the Database:");
+            database.ShowPeople();
+
+            // Add home appliances to the database
+            HomeAppliance appliance1 = new HomeAppliance()
+            {
+                Name = "Microwave",
+                PowerConsumption = 1000,
+                UnitsConsumedPerTime = 2,
+                Category = "Kitchen Appliances"
+            };
+            HomeAppliance appliance2 = new HomeAppliance()
+            {
+                Name = "Television",
+                PowerConsumption = 200,
+                UnitsConsumedPerTime = 1,
+                Category = "Personal Devices"
+            };
+            HomeAppliance appliance3 = new HomeAppliance()
+            {
+                Name = "Refrigerator",
+                PowerConsumption = 500,
+                UnitsConsumedPerTime = 3,
+                Category = "Kitchen Appliances"
+            };
+            HomeAppliance appliance4 = new HomeAppliance()
+            {
+                Name = "Air Conditioner",
+                PowerConsumption = 1500,
+                UnitsConsumedPerTime = 4,
+                Category = "Major Appliances"
+            };
+            HomeAppliance appliance5 = new HomeAppliance()
+            {
+                Name = "Washing Machine",
+                PowerConsumption = 700,
+                UnitsConsumedPerTime = 2,
+                Category = "Major Appliances"
+            };
+            HomeAppliance appliance6 = new HomeAppliance()
+            {
+                Name = "Dishwasher",
+                PowerConsumption = 1200,
+                UnitsConsumedPerTime = 3,
+                Category = "Major Appliances"
+            };
+            HomeAppliance appliance7 = new HomeAppliance()
+            {
+                Name = "Clothes Dryer",
+                PowerConsumption = 800,
+                UnitsConsumedPerTime = 2,
+                Category = "Major Appliances"
+            };
+            HomeAppliance appliance8 = new HomeAppliance()
+            {
+                Name = "Freezer",
+                PowerConsumption = 600,
+                UnitsConsumedPerTime = 2,
+                Category = "Major Appliances"
+            };
+            HomeAppliance appliance9 = new HomeAppliance()
+            {
+                Name = "Kitchen Stove",
+                PowerConsumption = 1500,
+                UnitsConsumedPerTime = 4,
+                Category = "Major Appliances"
+            };
+            HomeAppliance appliance10 = new HomeAppliance()
+            {
+                Name = "Water Heater",
+                PowerConsumption = 2000,
+                UnitsConsumedPerTime = 5,
+                Category = "Major Appliances"
+            };
+            HomeAppliance appliance11 = new HomeAppliance()
+            {
+                Name = "Trash Compactor",
+                PowerConsumption = 1500,
+                UnitsConsumedPerTime = 3,
+                Category = "Major Appliances"
+            };
+            HomeAppliance appliance12 = new HomeAppliance()
+            {
+                Name = "Induction Cooker",
+                PowerConsumption = 1200,
+                UnitsConsumedPerTime = 2,
+                Category = "Kitchen Appliances"
+            };
+            HomeAppliance appliance13 = new HomeAppliance()
+            {
+                Name = "Coffee Maker",
+                PowerConsumption = 800,
+                UnitsConsumedPerTime = 1,
+                Category = "Small Appliances"
+            };
+            HomeAppliance appliance14 = new HomeAppliance()
+            {
+                Name = "Blender",
+                PowerConsumption = 400,
+                UnitsConsumedPerTime = 1,
+                Category = "Small Appliances"
+            };
+            HomeAppliance appliance15 = new HomeAppliance()
+            {
+                Name = "Speaker",
+                PowerConsumption = 100,
+                UnitsConsumedPerTime = 1,
+                Category = "Consumer Electronics"
+            };
+            HomeAppliance appliance16 = new HomeAppliance()
+            {
+                Name = "Television",
+                PowerConsumption = 200,
+                UnitsConsumedPerTime = 1,
+                Category = "Consumer Electronics"
+            };
+            HomeAppliance appliance17 = new HomeAppliance()
+            {
+                Name = "Air Conditioner",
+                PowerConsumption = 1500,
+                UnitsConsumedPerTime = 4,
+                Category = "Consumer Electronics"
+            };
+            HomeAppliance appliance18 = new HomeAppliance()
+            {
+                Name = "Washing Machine",
+                PowerConsumption = 700,
+                UnitsConsumedPerTime = 2,
+                Category = "Consumer Electronics"
+            };
+            HomeAppliance appliance19 = new HomeAppliance()
+            {
+                Name = "Refrigerator",
+                PowerConsumption = 500,
+                UnitsConsumedPerTime = 3,
+                Category = "Consumer Electronics"
+            };
+            database.AddHomeAppliance(appliance1);
+            database.AddHomeAppliance(appliance2);
+            database.AddHomeAppliance(appliance3);
+            database.AddHomeAppliance(appliance4);
+            database.AddHomeAppliance(appliance5);
+            database.AddHomeAppliance(appliance6);
+            database.AddHomeAppliance(appliance7);
+            database.AddHomeAppliance(appliance8);
+            database.AddHomeAppliance(appliance9);
+            database.AddHomeAppliance(appliance10);
+            database.AddHomeAppliance(appliance11);
+            database.AddHomeAppliance(appliance12);
+            database.AddHomeAppliance(appliance13);
+            database.AddHomeAppliance(appliance14);
+            database.AddHomeAppliance(appliance15);
+            database.AddHomeAppliance(appliance16);
+            database.AddHomeAppliance(appliance17);
+            database.AddHomeAppliance(appliance18);
+            database.AddHomeAppliance(appliance19);
+
+            // Show all home appliances in the database
+            Console.WriteLine("Home Appliances in the Database:");
+            database.ShowHomeAppliances();
+
+            // Login page
+            Console.WriteLine();
+            Console.WriteLine("Login Page:");
+            Console.WriteLine("Enter your phone number:");
+            string loginPhoneNumber = Console.ReadLine();
+            Console.WriteLine("Enter your password:");
+            string loginPassword = Console.ReadLine();
+
+            if (IsValidPhoneNumber(loginPhoneNumber) && IsValidPassword(loginPassword, database, loginPhoneNumber))
+            {
+                Console.WriteLine("Login successful!");
+                // Perform further actions after successful login
+
+                while (true)
+                {
+                    Console.WriteLine("Press 1 for Kitchen Appliances");
+                    Console.WriteLine("Press 2 for Personal Devices");
+                    Console.WriteLine("Press 3 for General Devices and Stuff");
+                    Console.WriteLine("Press 0 to Exit");
+                    Console.WriteLine("Enter your choice:");
+                    int choice = Convert.ToInt32(Console.ReadLine());
+
+                    switch (choice)
+                    {
+                        case 1:
+                            Console.WriteLine("Kitchen Appliances:");
+                            ShowAppliancesByCategory(database, "Kitchen Appliances");
+                            break;
+                        case 2:
+                            Console.WriteLine("Personal Devices:");
+                            ShowAppliancesByCategory(database, "Personal Devices");
+                            break;
+                        case 3:
+                            Console.WriteLine("General Devices and Stuff:");
+                            ShowAppliancesByCategory(database, "General Devices and Stuff");
+                            break;
+                        case 0:
+                            Console.WriteLine("Goodbye!");
+                            return;
+                        default:
+                            Console.WriteLine("Invalid choice. Please try again.");
+                            break;
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("Invalid phone number or password!");
+                // Handle login failure
+            }
+        }
+
+        public static bool IsValidPhoneNumber(string phoneNumber)
+        {
+            Regex regex = new Regex(@"^\+92-3\d{2}-\d{7}$");
+            return regex.IsMatch(phoneNumber);
+        }
+
+        public static bool IsValidName(string name)
+        {
+            Regex regex = new Regex(@"^[A-Za-z\s]+$");
+            return regex.IsMatch(name);
+        }
+
+        public static bool IsValidCNIC(string cnic)
+        {
+            Regex regex = new Regex(@"^\d{5}-\d{7}-\d$");
+            return regex.IsMatch(cnic);
+        }
+
+        public static bool IsValidPassword(string password, Database database, string phoneNumber)
+        {
+            // Check if the password is valid for the given phone number
+            foreach (var person in database.GetPeople())
+            {
+                if (person.PhoneNumber == phoneNumber && person.Password == password)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public static void ShowAppliancesByCategory(Database database, string category)
+        {
+            foreach (var appliance in database.GetHomeAppliances())
+            {
+                if (appliance.Category == category)
+                {
+                    Console.WriteLine($"Name: {appliance.Name}");
+                    Console.WriteLine($"Power Consumption: {appliance.PowerConsumption} Watts");
+                    Console.WriteLine($"Units Consumed per Time: {appliance.UnitsConsumedPerTime}");
+                    Console.WriteLine();
+                }
+            }
+        }
+    }
+}
